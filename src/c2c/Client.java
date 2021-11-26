@@ -1,4 +1,9 @@
+
+/*
+In IntelliJidea Allow Multiple Instance in Edit Configuration, to instantiate multiple users.
+*/
 package c2c;
+
 
 import javax.swing.*;
 import java.awt.*;
