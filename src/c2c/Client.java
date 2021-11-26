@@ -115,7 +115,7 @@ public class Client extends JFrame {
     public static void main(String[] args) throws IOException {
         Scanner scanner = new Scanner(System.in);
         Socket socket = new Socket("localhost", 1234);
-        System.out.println("Enter the Password");
+        System.out.println("Enter the Username");
         String username = scanner.nextLine();
         client = new Client(socket);
         client.userName = username;
