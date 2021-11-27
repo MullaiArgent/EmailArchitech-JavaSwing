@@ -2,7 +2,7 @@
 /*
 In IntelliJidea Allow Multiple Instance in Edit Configuration, to instantiate multiple users.
 */
-package c2c;
+package c2cBroadcast;
 
 
 import javax.swing.*;
@@ -104,7 +104,7 @@ public class Client extends JFrame {
                     try {
                         msgFromGroupChat = bufferedReader.readLine();
                         String temp = textArea.getText();
-                        textArea.setText(" 54 ");
+                        textArea.setText("");
                         client.textArea.setText(temp + "\n" + msgFromGroupChat);
                         System.out.println(msgFromGroupChat);
                         System.out.println(temp);

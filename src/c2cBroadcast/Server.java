@@ -1,4 +1,4 @@
-package c2c;
+package c2cBroadcast;
 
 import javax.swing.*;
 import java.awt.*;
