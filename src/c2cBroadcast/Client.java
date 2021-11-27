@@ -83,7 +83,7 @@ public class Client extends JFrame {
     public void sendMessage(){
         try{
                 messageToSend = msgArea.getText();
-            System.out.println(messageToSend);
+                System.out.println(messageToSend);
                 msgArea.setText("");
                 bufferedWriter.write(messageToSend);
                 bufferedWriter.newLine();

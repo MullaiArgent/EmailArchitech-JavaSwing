@@ -20,7 +20,7 @@ public class ClientWindow extends JFrame {
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(null);
         this.getContentPane().setBackground(Color.GRAY);
-        //this.setResizable(false);
+        this.setResizable(false);
         this.setSize(300, 600);
         this.setVisible(true);
         scroll.setBounds(5,5,275,495);
