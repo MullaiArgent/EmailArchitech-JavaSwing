@@ -4,25 +4,7 @@ package ChatGUI;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Scanner;
-class Jdbc {
-    String username = "root";
-    String password = "@TeslaMysql2000";
 
-    public ResultSet dql (String query, String db) throws SQLException, ClassNotFoundException {
-        String url = "jdbc:mysql://localhost:3306/" + db.trim();
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection(url,username, password);
-        Statement st = con.createStatement();
-        return st.executeQuery(query);
-    }
-    public int dml (String query, String db) throws ClassNotFoundException, SQLException {
-        String url = "jdbc:mysql://localhost:3306/" + db.trim();
-        Class.forName("com.mysql.cj.jdbc.Driver");
-        Connection con = DriverManager.getConnection(url,username, password);
-        Statement st = con.createStatement();
-        return st.executeUpdate(query);
-    }
-}
 public class Main {
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
         String userName;
@@ -44,7 +26,9 @@ public class Main {
                 int attemptLeft = 3;
                 while(attemptLeft >= 1){
                     if(rs.getString(3).equals(scanner.nextLine())){
-                        //TODO ALREADY A USER PORTION
+
+                        new ClientWindow(userName);
+
                     }
                     System.out.println("Attempts left : " + attemptLeft);
                     attemptLeft--;
@@ -63,7 +47,15 @@ public class Main {
                                                                              "'" + password.trim() + "'," +
                                                                              " " + stamp.trim()    + "," +
                                                                              " " + port            + ")","chat");
-            System.out.println("number of rows affacted : "+ rowsAffacted);
+            System.out.println("Number of rows affected : "+ rowsAffacted);
+            int temp = new Jdbc().dml(
+                    "CREATE TABLE "+ port +" (" +
+                            " username varchar(255)" +
+                            " to_port int," +
+                            " chat_data varchar255" +
+                            ");", "chat"
+            );
+            new ClientWindow(userName);
         }
 
 
