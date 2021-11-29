@@ -2,27 +2,35 @@ package ChatGUI;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.io.*;
+import java.nio.Buffer;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class ClientWindow extends JFrame {
-    JScrollPane scroll;
+
     JTextArea textArea;
     JButton send;
+    JTextArea chatArea;
     public ClientWindow(String userName) throws SQLException, ClassNotFoundException {
-        newUser();
+
+        String chatter = "";
+        newChatter(userName);
         chattersWindow(userName);
-        scroll = new JScrollPane();
+        chatArea = new JTextArea();
         textArea = new JTextArea();
         send = new JButton("Send");
+
         JLabel label = new JLabel();
         label.setBackground(Color.green);
         label.setSize(50, 50);
         label.setVisible(true);
         label.setLayout(null);
-        scroll.add(label);
+
         this.setDefaultCloseOperation(EXIT_ON_CLOSE);
         this.setLayout(null);
         this.getContentPane().setBackground(Color.GRAY);
@@ -30,15 +38,45 @@ public class ClientWindow extends JFrame {
         this.setSize(600, 600);
         this.setVisible(true);
         this.setTitle(userName);
-        scroll.setBounds(305,5,275,495);
+
+        chatArea.setLineWrap(true);
+        chatArea.setBounds(305,5,275,495);
+        chatArea.setLayout(new FlowLayout());
         textArea.setBackground(Color.white);
         textArea.setBounds(305,515,195,40);
+        textArea.setLineWrap(true);
         send.setBounds(510, 515, 70, 40);
         send.setFocusPainted(false);
-        this.add(scroll);
+        send.addActionListener(new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+
+                String message = textArea.getText();  // message from the sender
+                try {
+
+                    FileWriter fw = new FileWriter("chatData/" + userName.trim() + "-" + chatter.trim() + ".txt");
+                    BufferedWriter bw = new BufferedWriter(fw);
+                    PrintWriter pw = new PrintWriter(bw);
+                    pw.println("You :" + message);
+
+                    // TODO update the chat area after the msg is sent
+
+                } catch (IOException ex) {
+                    ex.printStackTrace();
+                }
+
+            }
+        });
+
+        //JScrollPane scrollPane = new JScrollPane(chatArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
+        //this.add(scollPane);
+
+        this.add(chatArea);
         this.add(send);
         this.add(textArea);
     }
+
     public void chattersWindow(String userName) throws SQLException, ClassNotFoundException {
         ResultSet noOfChatters = new Jdbc().dql("SELECT * FROM username", "chat");
         int y = 55;
@@ -54,6 +92,7 @@ public class ClientWindow extends JFrame {
             chatterName.setForeground(Color.BLUE);
             super.add(chatterName);
             super.add(chatterTab);
+
             chatterTab.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
@@ -82,11 +121,11 @@ public class ClientWindow extends JFrame {
                     chatterName.setFont(new Font("Helvetica Neue", Font.PLAIN, 14));
                 }
             });
-
             y += 55;
         }
     }
-    public void newUser(){
+
+    public void newChatter(String userName){
         Icon addUser = new ImageIcon("images/R.jpg");
         JLabel icon = new JLabel(addUser);
         icon.setBounds(5,5,40,40);
@@ -96,10 +135,28 @@ public class ClientWindow extends JFrame {
                 String chatter = JOptionPane.showInputDialog("Enter the UserName to chat with ");
                 try {
                     ResultSet rs = new Jdbc().dql("SELECT USERNAME FROM USER","CHAT");
-                    // TODO check for existing user
-                } catch (SQLException ex) {
-                    ex.printStackTrace();
-                } catch (ClassNotFoundException ex) {
+                    Boolean chatterExist = false;
+                    while(rs.next()){
+                        if(chatter.equals(rs.getString(1))) {
+
+                            chatterExist = true;
+
+                            File chatDataFile = new File("chatData/"+ userName+"-"+chatter+".txt");
+                            chatDataFile.createNewFile();
+
+                            new Jdbc().dml("INSERT INTO "+ userName +" VALUES("+ "" +
+                                    ""+chatter+"," +
+                                    ""+rs.getInt(4) + "" +
+                                    ",chatData/" + userName.trim() +"-"+chatter.trim() + ")","CHAT");
+
+                            chattersWindow(userName);
+
+                            break;
+                        }
+                    }if(!chatterExist){
+                        JOptionPane.showMessageDialog(null,"UserName Doesn't Exist");
+                    }
+                } catch (SQLException | ClassNotFoundException | IOException ex) {
                     ex.printStackTrace();
                 }
             }
@@ -127,7 +184,10 @@ public class ClientWindow extends JFrame {
         super.add(icon);
     }
 
+
     public static void main(String[] args) throws SQLException, ClassNotFoundException {
-        new ClientWindow("Test");
+
+        new ClientWindow("test");
+
     }
 }

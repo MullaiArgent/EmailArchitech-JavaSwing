@@ -18,6 +18,7 @@ public class Main {
         userName = scanner.nextLine();
         System.out.print("Enter the Email ID : ");
         mailId = scanner.nextLine();
+
         while(rs.next()){
             if(rs.getString(2).equals(mailId)){
                 newUser = false;
@@ -42,19 +43,20 @@ public class Main {
             port = Integer.parseInt(scanner.nextLine());
             // CAST(N'2012-06-18 10:34:09.000' AS DateTime),
             String stamp = "CAST(N'"+ LocalDateTime.now() + "' AS DATETIME)";
+
             int rowsAffacted = new Jdbc().dml("INSERT INTO USER VALUES ('" + userName.trim() + "'," +
                                                                              "'" + mailId.trim()   + "'," +
                                                                              "'" + password.trim() + "'," +
                                                                              " " + stamp.trim()    + "," +
                                                                              " " + port            + ")","chat");
             System.out.println("Number of rows affected : "+ rowsAffacted);
-            int temp = new Jdbc().dml(
-                    "CREATE TABLE "+ port +" (" +
-                            " username varchar(255)" +
-                            " to_port int," +
-                            " chat_data varchar255" +
-                            ");", "chat"
-            );
+
+            new Jdbc().dml("CREATE TABLE "+ userName + "(" +
+                    " chatter VARCHAR(45) NOT NULL," +
+                    " port INT NULL," +
+                    " char_data VARCHAR(45) NULL," +
+                    " PRIMARY KEY (chatter))", "chat");
+
             new ClientWindow(userName);
         }
 
