@@ -78,8 +78,6 @@ public class ClientWindow extends JFrame {
                     jp.showMessageDialog(null, "Select or Add a Chat");
                 }
         }}});
-        //JScrollPane scrollPane = new JScrollPane(chatArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
-        //this.add(scollPane);
 
         this.add(chatArea);
         this.add(send);
@@ -199,6 +197,6 @@ public class ClientWindow extends JFrame {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
-        new ClientWindow("temp2", 4568);
+        new ClientWindow("temp3", 4567);
     }
 }
