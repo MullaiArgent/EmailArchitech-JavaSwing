@@ -63,24 +63,13 @@ public class ClientWindow extends JFrame {
                 String message = textArea.getText();
                 textArea.setText("");
 
-                try {
+                    // TODO write on the file
 
-                    FileWriter fw = new FileWriter("chatData/" + userName.trim() + "-" + chatter.trim() + ".txt");
-                    BufferedWriter bw = new BufferedWriter(fw);
-                    PrintWriter pw = new PrintWriter(bw);
-                    pw.println("You :" + message);
 
-                    // TODO update the chat area after the msg is sent
-
-                    // System.out.println(userName+":"+chatter+":"+message);
                     out.println(userName+":"+chatter+":"+message);
                     out.flush();
 
-                } catch (IOException ex) {
-                    ex.printStackTrace();
-                }
-
-            }else{
+                }else{
                     JOptionPane jp = new JOptionPane();
                     jp.showMessageDialog(null, "Select or Add a Chat");
                 }

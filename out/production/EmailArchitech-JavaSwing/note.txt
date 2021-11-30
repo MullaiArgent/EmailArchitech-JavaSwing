@@ -1,0 +1,7 @@
+use chat;
+select * from user;
+insert into user values ("suriya","mullairajan2000@gmail.com","password",CAST(N'2012-06-18T10:34:09.000' AS DateTime), 3456);
+delete from user where username="mm";
+delete from user;
+set SQL_SAFE_UPDATES = 0;
+alter table user add port int;

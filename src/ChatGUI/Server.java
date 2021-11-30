@@ -26,6 +26,8 @@ public class Server {
                     bufferedReader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
                     String clientsData = bufferedReader.readLine();
                     System.out.println(clientsData);
+                    // TODO UPDATE THE DATA INTO THE FILE
+
 
                 }
             }
