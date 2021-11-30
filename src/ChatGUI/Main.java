@@ -1,12 +1,13 @@
 package ChatGUI;
 
 
+import java.io.IOException;
 import java.sql.*;
 import java.time.LocalDateTime;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
         String userName;
         String mailId;
         String password;
@@ -27,9 +28,8 @@ public class Main {
                 int attemptLeft = 3;
                 while(attemptLeft >= 1){
                     if(rs.getString(3).equals(scanner.nextLine())){
-
-                        new ClientWindow(userName);
-
+                        port = rs.getInt(5);
+                        new ClientWindow(userName, port);
                     }
                     System.out.println("Attempts left : " + attemptLeft);
                     attemptLeft--;
@@ -47,7 +47,7 @@ public class Main {
             int rowsAffacted = new Jdbc().dml("INSERT INTO USER VALUES ('" + userName.trim() + "'," +
                                                                              "'" + mailId.trim()   + "'," +
                                                                              "'" + password.trim() + "'," +
-                                                                             " " + stamp.trim()    + "," +
+                                                                             " " + stamp.trim()    + ","  +
                                                                              " " + port            + ")","chat");
             System.out.println("Number of rows affected : "+ rowsAffacted);
 
@@ -57,10 +57,7 @@ public class Main {
                     " char_data VARCHAR(45) NULL," +
                     " PRIMARY KEY (chatter))", "chat");
 
-            new ClientWindow(userName);
+            new ClientWindow(userName, port);
         }
-
-
     }
-
 }

@@ -7,7 +7,9 @@ import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.io.*;
-import java.nio.Buffer;
+import java.net.InetAddress;
+import java.net.Socket;
+import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -16,9 +18,15 @@ public class ClientWindow extends JFrame {
     JTextArea textArea;
     JButton send;
     JTextArea chatArea;
-    public ClientWindow(String userName) throws SQLException, ClassNotFoundException {
+    String chatter;
+    public ClientWindow(String userName, int port) throws SQLException, ClassNotFoundException, IOException {
+        String ip = "localhost";
+        int serverPort = 8888;
+        Socket socket = new Socket(ip, serverPort, InetAddress.getByName(ip), port);
+        OutputStreamWriter osw = new OutputStreamWriter(socket.getOutputStream());
+        PrintWriter out = new PrintWriter(osw);
 
-        String chatter = "";
+        chatter = "";
         newChatter(userName);
         chattersWindow(userName);
         chatArea = new JTextArea();
@@ -51,8 +59,10 @@ public class ClientWindow extends JFrame {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+                if(!chatter.equals("")){
+                String message = textArea.getText();
+                textArea.setText("");
 
-                String message = textArea.getText();  // message from the sender
                 try {
 
                     FileWriter fw = new FileWriter("chatData/" + userName.trim() + "-" + chatter.trim() + ".txt");
@@ -62,13 +72,19 @@ public class ClientWindow extends JFrame {
 
                     // TODO update the chat area after the msg is sent
 
+                    // System.out.println(userName+":"+chatter+":"+message);
+                    out.println(userName+":"+chatter+":"+message);
+                    out.flush();
+
                 } catch (IOException ex) {
                     ex.printStackTrace();
                 }
 
-            }
-        });
-
+            }else{
+                    JOptionPane jp = new JOptionPane();
+                    jp.showMessageDialog(null, "Select or Add a Chat");
+                }
+        }});
         //JScrollPane scrollPane = new JScrollPane(chatArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         //this.add(scollPane);
 
@@ -78,8 +94,10 @@ public class ClientWindow extends JFrame {
     }
 
     public void chattersWindow(String userName) throws SQLException, ClassNotFoundException {
+
         ResultSet noOfChatters = new Jdbc().dql("SELECT * FROM username", "chat");
         int y = 55;
+
         while(noOfChatters.next()) {
             JPanel chatterTab = new JPanel();
             JLabel chatterName = new JLabel();
@@ -96,7 +114,7 @@ public class ClientWindow extends JFrame {
             chatterTab.addMouseListener(new MouseListener() {
                 @Override
                 public void mouseClicked(MouseEvent e) {
-
+                    chatter = chatterName.getText();
                 }
 
                 @Override
@@ -135,13 +153,16 @@ public class ClientWindow extends JFrame {
                 String chatter = JOptionPane.showInputDialog("Enter the UserName to chat with ");
                 try {
                     ResultSet rs = new Jdbc().dql("SELECT USERNAME FROM USER","CHAT");
+
                     Boolean chatterExist = false;
+
                     while(rs.next()){
                         if(chatter.equals(rs.getString(1))) {
 
                             chatterExist = true;
 
-                            File chatDataFile = new File("chatData/"+ userName+"-"+chatter+".txt");
+                            File chatDataFile = new File("chatData/"+ userName.trim() +"-"+chatter.trim() +".txt");
+
                             chatDataFile.createNewFile();
 
                             new Jdbc().dml("INSERT INTO "+ userName +" VALUES("+ "" +
@@ -184,10 +205,7 @@ public class ClientWindow extends JFrame {
         super.add(icon);
     }
 
-
-    public static void main(String[] args) throws SQLException, ClassNotFoundException {
-
-        new ClientWindow("test");
-
+    public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
+        new ClientWindow("test", 6757);
     }
 }
