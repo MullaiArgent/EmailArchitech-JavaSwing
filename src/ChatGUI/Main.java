@@ -13,7 +13,7 @@ public class Main {
         String password;
         int port;
         Boolean newUser = true;
-        ResultSet rs = new Jdbc().dql("select * from user", "chat");
+        ResultSet rs = new DataManagement().dql("select * from user", "chat");
         Scanner scanner = new Scanner(System.in);
         System.out.print("Enter the Name : ");
         userName = scanner.nextLine();
@@ -44,14 +44,14 @@ public class Main {
             // CAST(N'2012-06-18 10:34:09.000' AS DateTime),
             String stamp = "CAST(N'"+ LocalDateTime.now() + "' AS DATETIME)";
 
-            int rowsAffacted = new Jdbc().dml("INSERT INTO USER VALUES ('" + userName.trim() + "'," +
+            int rowsAffacted = new DataManagement().dml("INSERT INTO USER VALUES ('" + userName.trim() + "'," +
                                                                              "'" + mailId.trim()   + "'," +
                                                                              "'" + password.trim() + "'," +
                                                                              " " + stamp.trim()    + ","  +
                                                                              " " + port            + ")","chat");
             System.out.println("Number of rows affected : "+ rowsAffacted);
 
-            new Jdbc().dml("CREATE TABLE "+ userName + "(" +
+            new DataManagement().dml("CREATE TABLE "+ userName + "(" +
                     " chatter VARCHAR(45) NOT NULL," +
                     " port INT NULL," +
                     " char_data VARCHAR(45) NULL," +

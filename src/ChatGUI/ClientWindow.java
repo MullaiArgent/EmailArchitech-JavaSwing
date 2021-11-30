@@ -9,7 +9,6 @@ import java.awt.event.MouseListener;
 import java.io.*;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.net.UnknownHostException;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
@@ -61,19 +60,24 @@ public class ClientWindow extends JFrame {
             public void actionPerformed(ActionEvent e) {
                 if(!chatter.equals("")){
                 String message = textArea.getText();
+                if(!message.equals("")){
                 textArea.setText("");
+                    String address = "chatData/" + userName.trim() + "-" + chatter.trim() + ".txt";
+                    String data = "You:" + chatter + ":" + message;
+                    try {
+                        new DataManagement().fileUpdate(address,data);
+                    } catch (IOException ex) {
+                        ex.printStackTrace();
+                    }
 
-                    // TODO write on the file
-
-
-                    out.println(userName+":"+chatter+":"+message);
+                    out.println(chatter + ":" + userName + ":" + message); // to the server
                     out.flush();
 
                 }else{
                     JOptionPane jp = new JOptionPane();
                     jp.showMessageDialog(null, "Select or Add a Chat");
                 }
-        }});
+        }}});
         //JScrollPane scrollPane = new JScrollPane(chatArea, ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS, ScrollPaneConstants.HORIZONTAL_SCROLLBAR_ALWAYS);
         //this.add(scollPane);
 
@@ -84,7 +88,7 @@ public class ClientWindow extends JFrame {
 
     public void chattersWindow(String userName) throws SQLException, ClassNotFoundException {
 
-        ResultSet noOfChatters = new Jdbc().dql("SELECT * FROM username", "chat");
+        ResultSet noOfChatters = new DataManagement().dql("SELECT * FROM username", "chat");
         int y = 55;
 
         while(noOfChatters.next()) {
@@ -141,7 +145,7 @@ public class ClientWindow extends JFrame {
             public void mouseClicked(MouseEvent e) {
                 String chatter = JOptionPane.showInputDialog("Enter the UserName to chat with ");
                 try {
-                    ResultSet rs = new Jdbc().dql("SELECT USERNAME FROM USER","CHAT");
+                    ResultSet rs = new DataManagement().dql("SELECT USERNAME FROM USER","CHAT");
 
                     Boolean chatterExist = false;
 
@@ -150,11 +154,11 @@ public class ClientWindow extends JFrame {
 
                             chatterExist = true;
 
-                            File chatDataFile = new File("chatData/"+ userName.trim() +"-"+chatter.trim() +".txt");
+                            File chatDataFile = new File("chatData/" + userName.trim() +"-"+chatter.trim() +".txt");
 
                             chatDataFile.createNewFile();
 
-                            new Jdbc().dml("INSERT INTO "+ userName +" VALUES("+ "" +
+                            new DataManagement().dml("INSERT INTO "+ userName +" VALUES("+ "" +
                                     ""+chatter+"," +
                                     ""+rs.getInt(4) + "" +
                                     ",chatData/" + userName.trim() +"-"+chatter.trim() + ")","CHAT");
@@ -195,6 +199,6 @@ public class ClientWindow extends JFrame {
     }
 
     public static void main(String[] args) throws SQLException, ClassNotFoundException, IOException {
-        new ClientWindow("test", 6757);
+        new ClientWindow("temp2", 4568);
     }
 }
