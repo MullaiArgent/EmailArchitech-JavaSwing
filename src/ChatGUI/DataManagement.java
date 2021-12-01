@@ -1,9 +1,9 @@
 package ChatGUI;
 
-import java.io.*;
 import java.sql.*;
 
 public class DataManagement {
+
     String username = "root";
     String password = "@TeslaMysql2000";
 
@@ -21,10 +21,6 @@ public class DataManagement {
         Statement st = con.createStatement();
         return st.executeUpdate(query);
     }
-    public void fileUpdate(String path, String text) throws IOException {
-            FileWriter fw = new FileWriter(path, true);
-            fw.write(text+ "\n");
-            fw.close();
-    }
+
 }
 

@@ -3,12 +3,15 @@ package ChatGUI;
 
 import java.io.*;
 import java.net.Socket;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 
 class ClientHandler implements Runnable {
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
     BufferedReader bufferedReader;
+
     public ClientHandler(Socket socket) throws IOException {
         try {
             this.socket = socket;
@@ -33,22 +36,31 @@ class ClientHandler implements Runnable {
                 for(int i = 0; i < clientsData.length();i++){
                     if(clientsData.charAt(i) == ':'){
                         counter++;
-                        continue;
-                    }
+                        continue;                                    }
                     if(counter==0){
-                        address1.append(clientsData.charAt(i));
-                    }
+                        address1.append(clientsData.charAt(i));      }
                     if (counter==1){
-                        address2.append(clientsData.charAt(i));
-                    }
+                        address2.append(clientsData.charAt(i));      }
                     if (counter==2){
-                        data.append(clientsData.charAt(i));
+                        data.append(clientsData.charAt(i));          }
+                }
+                System.out.println("this from here");
+                String address  = address1.toString().trim() + "-" +address2.toString().trim();
+                System.out.println(address);
+
+                ResultSet rs = new DataManagement().dql("SELECT USERNAME FROM USER","CHAT");
+                int r_port = 0;
+                while(rs.next()){
+                    if(rs.getString(1).equals(address2.toString())){
+                        r_port = rs.getInt(5);
                     }
                 }
-                String address  = address1.toString().trim() + "-" +address2.toString().trim() + ".txt";
+                new DataManagement().dml("INSERT INTO "+ address +" VALUES("+ "" +
+                        "" + address2 + "," +
+                        ""+ r_port + "" +
+                        ""+ data +"","CHAT");
 
-                new DataManagement().fileUpdate(address,address2 + ":You:" + data.toString());
-            } catch (IOException e) {
+            } catch (IOException | SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
             }
         }

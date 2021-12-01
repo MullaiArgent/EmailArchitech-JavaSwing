@@ -5,3 +5,9 @@ delete from user where username="mm";
 delete from user;
 set SQL_SAFE_UPDATES = 0;
 alter table user add port int;
+
+new DataManagement().dml("CREATE TABLE "+ address + "(" +
+                        " chatter VARCHAR(45) NOT NULL," +
+                        " r_port INT NULL," +
+                        " chat_data VARCHAR(255) NOT NULL)" , "chat");
+                 TO CREATE A DB FOR EACH CHATS
