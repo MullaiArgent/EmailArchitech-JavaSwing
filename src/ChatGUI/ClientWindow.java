@@ -18,9 +18,11 @@ public class ClientWindow extends JFrame {
     JButton send;
     JTextArea chatArea;
     String chatter;
+    //JScrollPane scrollPane;
 
     public ClientWindow(String userName, int port) throws SQLException, ClassNotFoundException, IOException {
-
+        //scrollPane = new JScrollPane();
+        //scrollPane.setBounds(305,5,275,495);
         String ip = "localhost";
         int serverPort = 8888;
         Socket socket = new Socket(ip, serverPort, InetAddress.getByName(ip), port);
@@ -37,9 +39,11 @@ public class ClientWindow extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 try {
-                    renderChatArea("chatData/" + userName + "-" + chatter + ".txt");
-                } catch (IOException ex) {
+                    renderChatArea(userName + "_" + chatter);
+                    chattersWindow(userName);
+                } catch (IOException | SQLException | ClassNotFoundException ex) {
                     ex.printStackTrace();
+
                 }
             }
             @Override
@@ -95,8 +99,8 @@ public class ClientWindow extends JFrame {
                 String message = textArea.getText();
                 if(!message.equals("")){
                 textArea.setText("");
-                    String address =  userName.trim() + "-" + chatter.trim();
-                    String data = "You:" + chatter + ":" + message + "\n";
+                    String address =  userName.trim() + "_" + chatter.trim();
+                    String data = userName +":" + chatter + ":" + message + "\n";
                     try {
                         ResultSet rs = new DataManagement().dql("SELECT * FROM USER","CHAT");
                         int r_port = 0;
@@ -105,10 +109,13 @@ public class ClientWindow extends JFrame {
                                 r_port = rs.getInt(5);
                             }
                         }
-                        new DataManagement().dml("INSERT INTO "+ address +" VALUES("+ "" +
-                                "" + chatter + "," +
-                                ""+ r_port + "" +
-                                ""+ data +"","CHAT");
+                        // TODO CHAINS FROM THE CREATION BUG
+                        System.out.println(data);
+
+                        new DataManagement().dml("INSERT INTO "+ address +" VALUES("+
+                                "'" + chatter + "'," +
+                                "" + r_port + "," +
+                                "'"+ data +"');","CHAT");
 
                         renderChatArea(address);
 
@@ -133,6 +140,7 @@ public class ClientWindow extends JFrame {
         this.add(chatArea);
         this.add(send);
         this.add(textArea);
+        //this.add(scrollPane);
     }
 
     public void chattersWindow(String userName) throws SQLException, ClassNotFoundException {
@@ -155,25 +163,19 @@ public class ClientWindow extends JFrame {
             super.add(chatterTab);
 
             chatterTab.addMouseListener(new MouseListener() {
-                String address = "chatData/" + userName.trim() + "-" + chatterName.getText().trim() + ".txt";
+                String address = userName.trim() + "_" + chatterName.getText().trim();
                 @Override
                 public void mouseClicked(MouseEvent e) {
                     chatter = chatterName.getText();
-                    chatArea.setText("");
+                    //chatArea.setText("");
                     try {
-                        new DataManagement().dml("CREATE TABLE "+ address + "(" +
-                                " chatter VARCHAR(45) NOT NULL," +
-                                " r_port INT NULL," +
-                                " chat_data VARCHAR(255) NOT NULL)" , "chat");
+
                         renderChatArea(address);
-                    } catch (FileNotFoundException ex) {
+
+                    } catch (FileNotFoundException | SQLException | ClassNotFoundException ex) {
                         ex.printStackTrace();
                     } catch (IOException ioException) {
                         ioException.printStackTrace();
-                    } catch (SQLException throwables) {
-                        throwables.printStackTrace();
-                    } catch (ClassNotFoundException classNotFoundException) {
-                        classNotFoundException.printStackTrace();
                     }
                 }
 
@@ -211,30 +213,43 @@ public class ClientWindow extends JFrame {
             @Override
             public void mouseClicked(MouseEvent e) {
                 String chatter = JOptionPane.showInputDialog("Enter the UserName to chat with ");
-                try {
-                    ResultSet rs = new DataManagement().dql("SELECT USERNAME FROM USER","CHAT");
+                if(!(chatter == null)) {
+                    try {
+                        ResultSet rs = new DataManagement().dql("SELECT USERNAME FROM USER", "CHAT");
 
-                    Boolean chatterExist = false;
+                        Boolean chatterExist = false;
 
-                    while(rs.next()){
-                        if(chatter.equals(rs.getString(1))) {
+                        while (rs.next()) {
+                            if (chatter.equals(rs.getString(1))) {
 
-                            chatterExist = true;
+                                chatterExist = true;
+                                System.out.println("userName " + userName);
+                                System.out.println("chatter " + chatter);
+                                String address_s = userName.trim() + "_" + chatter.trim();
+                                String address_r = chatter.trim() + "_" + userName.trim();
 
-                            // TODO NEW FRIEND TO THE USER ADDED HERE.
+                                new DataManagement().dml("INSERT INTO friend_list_" + userName.trim() + " VALUES ('" + chatter + "');", "CHAT");
+                                new DataManagement().dml("INSERT INTO friend_list_" + chatter.trim() + " VALUES ('" + userName + "');", "CHAT");
+                                new DataManagement().dml("CREATE TABLE " + address_s + "(" +
+                                        " chatter VARCHAR(45) NOT NULL," +
+                                        " r_port INT NULL," +
+                                        " chat_data VARCHAR(255) NOT NULL);", "chat");
+                                new DataManagement().dml("CREATE TABLE " + address_r + "(" +
+                                        " chatter VARCHAR(45) NOT NULL," +
+                                        " r_port INT NULL," +
+                                        " chat_data VARCHAR(255) NOT NULL);", "chat");
 
-                            new DataManagement().dml("INSERT INTO "+ "friend_list_"+ userName +" VALUES(" +
-                                    ""+ chatter + ")","CHAT");
+                                chattersWindow(userName);
 
-                            chattersWindow(userName);
-
-                            break;
+                                break;
+                            }
                         }
-                    }if(!chatterExist){
-                        JOptionPane.showMessageDialog(null,"UserName Doesn't Exist");
+                        if (!chatterExist) {
+                            JOptionPane.showMessageDialog(null, "UserName Doesn't Exist");
+                        }
+                    } catch (SQLException | ClassNotFoundException ex) {
+                        ex.printStackTrace();
                     }
-                } catch (SQLException | ClassNotFoundException ex) {
-                    ex.printStackTrace();
                 }
             }
             @Override
@@ -257,11 +272,17 @@ public class ClientWindow extends JFrame {
         super.add(icon);
     }
 
-    public void renderChatArea(String filename) throws IOException {
+    public void renderChatArea(String filename) throws IOException, SQLException, ClassNotFoundException {
 
-    // TODO LABELS FROM DB
-        }
-    // TODO Try adding lable into the scroll pane.
-    // TODO Try adding the data into the DB instead of Text File
-
+            ResultSet chats = new DataManagement().dql("SELECT chat_data FROM "+ filename , "CHAT");
+            int y = 5;
+            while(chats.next()){
+                String chat = chats.getString(1);
+                    JLabel l = new JLabel(chat);
+                    l.setBounds(5,y, 230, 25);
+                    //scrollPane.add(l);
+                    chatArea.setText(chat);
+                    y += 25;
+         }
+    }
 }

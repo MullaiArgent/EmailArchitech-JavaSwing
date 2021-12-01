@@ -29,7 +29,7 @@ class ClientHandler implements Runnable {
                 String clientsData = bufferedReader.readLine();
                 System.out.println(clientsData);
 
-                StringBuilder address1 = new StringBuilder("chatData/");
+                StringBuilder address1 = new StringBuilder();
                 StringBuilder address2 = new StringBuilder();
                 StringBuilder data = new StringBuilder();
                 int counter = 0;
@@ -44,17 +44,17 @@ class ClientHandler implements Runnable {
                     if (counter==2){
                         data.append(clientsData.charAt(i));          }
                 }
-                System.out.println("this from here");
-                String address  = address1.toString().trim() + "-" +address2.toString().trim();
-                System.out.println(address);
 
-                ResultSet rs = new DataManagement().dql("SELECT USERNAME FROM USER","CHAT");
+                String address  = address1.toString().trim() + "_" +address2.toString().trim();
+
+                ResultSet rs = new DataManagement().dql("SELECT * FROM USER","CHAT");
                 int r_port = 0;
                 while(rs.next()){
                     if(rs.getString(1).equals(address2.toString())){
                         r_port = rs.getInt(5);
                     }
                 }
+                System.out.println(data);
                 new DataManagement().dml("INSERT INTO "+ address +" VALUES("+ "" +
                         "" + address2 + "," +
                         ""+ r_port + "" +

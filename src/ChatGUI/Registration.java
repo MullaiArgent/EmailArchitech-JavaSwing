@@ -27,11 +27,13 @@ public class Registration {
                 System.out.print("Enter your Password : ");
                 int attemptLeft = 3;
                 while(attemptLeft >= 1){
-                    System.out.println("Attempts left : " + attemptLeft);
+
                     if(rs.getString(3).equals(scanner.nextLine())){
                         port = rs.getInt(5);
                         new ClientWindow(userName, port);
                         attemptLeft=0;
+                    }else{
+                        System.out.println("Attempts left : " + attemptLeft);
                     }
 
                     attemptLeft--;
@@ -46,7 +48,7 @@ public class Registration {
             // CAST(N'2012-06-18 10:34:09.000' AS DateTime),
             String stamp = "CAST(N'"+ LocalDateTime.now() + "' AS DATETIME)";
 
-            new DataManagement().dml("CREATE TABLE "+ "friend_list_"+ userName + "(" +
+            new DataManagement().dml("CREATE TABLE "+ "friend_list_"+ userName.trim() + "(" +
                     " chatters VARCHAR(45) NOT NULL)" , "chat");
 
             int rowsAffacted = new DataManagement().dml("INSERT INTO USER VALUES ('" + userName.trim() + "'," +
@@ -56,9 +58,7 @@ public class Registration {
                                                                              " " + port            + ")","chat");
             System.out.println("Number of rows affected : "+ rowsAffacted);
 
-
-
-            new ClientWindow(userName, port);
+            new ClientWindow(userName.trim(), port);
         }
     }
 }
