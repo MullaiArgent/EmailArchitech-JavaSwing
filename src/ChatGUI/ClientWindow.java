@@ -1,6 +1,7 @@
 package ChatGUI;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -23,6 +24,8 @@ public class ClientWindow extends JFrame {
     public ClientWindow(String userName, int port) throws SQLException, ClassNotFoundException, IOException {
         //scrollPane = new JScrollPane();
         //scrollPane.setBounds(305,5,275,495);
+        ImageIcon mastericon = new ImageIcon("images\\mastericon.png");
+        this.setIconImage(mastericon.getImage());
         String ip = "localhost";
         int serverPort = 8888;
         Socket socket = new Socket(ip, serverPort, InetAddress.getByName(ip), port);
@@ -30,8 +33,9 @@ public class ClientWindow extends JFrame {
         PrintWriter out = new PrintWriter(osw);
         chatter = "";
 
-        newChatter(userName);
-        chattersWindow(userName);
+        newChatter(userName);  // add user icon
+        chattersWindow(userName);  // chatters list from db
+        multiMediaClib();  // clib icon to share
         Icon addUser = new ImageIcon("images/reload.jpg");
         JLabel addUserIcon = new JLabel(addUser);
         addUserIcon.setBounds(45,5,40,40);
@@ -87,7 +91,7 @@ public class ClientWindow extends JFrame {
         chatArea.setBounds(305,5,275,495);
         chatArea.setLayout(new FlowLayout());
         textArea.setBackground(Color.white);
-        textArea.setBounds(305,515,195,40);
+        textArea.setBounds(340,515,195,40);
         textArea.setLineWrap(true);
         send.setBounds(510, 515, 70, 40);
         send.setFocusPainted(false);
@@ -141,6 +145,117 @@ public class ClientWindow extends JFrame {
         this.add(send);
         this.add(textArea);
         //this.add(scrollPane);
+    }
+
+    private void multiMediaClib() {
+        Icon clib = new ImageIcon("images\\clib.jpg");
+        Icon sendImage = new ImageIcon("images\\sendImage.jpg");
+        Icon hyperlink = new ImageIcon("images\\hyperlink.jpg");
+
+        JLabel cliblable = new JLabel(clib);
+        JLabel sendImageLabel = new JLabel(sendImage);
+        JLabel hyperlinkLabel = new JLabel(hyperlink);
+
+        sendImageLabel.setVisible(false);
+        hyperlinkLabel.setVisible(false);
+
+
+
+        cliblable.setBounds(305,515,40,40);
+        sendImageLabel.setBounds(265, 480, 40,40);
+        hyperlinkLabel.setBounds(305,480,40,40);
+
+        cliblable.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (!sendImageLabel.isVisible()) {
+                    sendImageLabel.setVisible(true);
+                    hyperlinkLabel.setVisible(true);
+                }else{
+                    sendImageLabel.setVisible(false);
+                    hyperlinkLabel.setVisible(false);
+                }
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                cliblable.setBounds(305,515,45,45);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                cliblable.setBounds(305,515,40,40);
+            }
+        });
+
+        sendImageLabel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                JFileChooser j = new JFileChooser("./");
+                j.showOpenDialog(null);
+                j.getSelectedFile().getAbsolutePath(); // Selected Image
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                sendImageLabel.setBounds(265, 480, 45,45);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                sendImageLabel.setBounds(265, 480, 40,40);
+            }
+        });
+        hyperlinkLabel.addMouseListener(new MouseListener() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+
+            }
+
+            @Override
+            public void mouseEntered(MouseEvent e) {
+                hyperlinkLabel.setBounds(305,480,45,45);
+            }
+
+            @Override
+            public void mouseExited(MouseEvent e) {
+                hyperlinkLabel.setBounds(305,480,40,40);
+            }
+        });
+        this.add(cliblable);
+        this.add(sendImageLabel);
+        this.add(hyperlinkLabel);
+
     }
 
     public void chattersWindow(String userName) throws SQLException, ClassNotFoundException {
@@ -284,5 +399,9 @@ public class ClientWindow extends JFrame {
                     chatArea.setText(chat);
                     y += 25;
          }
+    }
+
+    public static void main(String[] args) throws SQLException, IOException, ClassNotFoundException {
+        new ClientWindow("mullai", 6789);
     }
 }

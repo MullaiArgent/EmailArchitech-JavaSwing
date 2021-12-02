@@ -7,7 +7,7 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 
-class ClientHandler implements Runnable {
+public class ClientHandler implements Runnable {
     public static ArrayList<ClientHandler> clientHandlers = new ArrayList<>();
     private Socket socket;
     BufferedReader bufferedReader;
@@ -45,7 +45,7 @@ class ClientHandler implements Runnable {
                         data.append(clientsData.charAt(i));          }
                 }
 
-                String address  = address1.toString().trim() + "_" +address2.toString().trim();
+                String address  = address1.toString().trim() + "_" + address2.toString().trim();
 
                 ResultSet rs = new DataManagement().dql("SELECT * FROM USER","CHAT");
                 int r_port = 0;
@@ -55,10 +55,14 @@ class ClientHandler implements Runnable {
                     }
                 }
                 System.out.println(data);
+
+                // TODO REFLECT BOTH THE END CHAT DATA
+
                 new DataManagement().dml("INSERT INTO "+ address +" VALUES("+ "" +
                         "" + address2 + "," +
                         ""+ r_port + "" +
                         ""+ data +"","CHAT");
+
 
             } catch (IOException | SQLException | ClassNotFoundException e) {
                 e.printStackTrace();
