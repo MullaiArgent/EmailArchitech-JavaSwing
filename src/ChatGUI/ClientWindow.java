@@ -260,7 +260,7 @@ public class ClientWindow extends JFrame {
 
     public void chattersWindow(String userName) throws SQLException, ClassNotFoundException {
 
-        ResultSet noOfChatters = new DataManagement().dql("SELECT * FROM friend_list_" +userName , "chat");
+        ResultSet noOfChatters = new DataManagement().dql("SELECT * FROM friend_list_" +userName , "chat");ResultSet noOfChatters = new DataManagement().dql("SELECT * FROM friend_list_" +userName , "chat");
 
         int y = 55;
 
